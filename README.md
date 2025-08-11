@@ -1,1 +1,2 @@
 # Quiz-App
+Neon Quiz is an interactive web-based quiz application featuring multi-category challenges, user authentication, and admin controls. It offers timed questions, lifelines, score tracking, and leaderboards, built with JavaScript and localStorage for data persistence. The responsive design ensures seamless gameplay across devices while robust admin tools enable easy content management. Perfect for engaging learning or competitive trivia !! 
