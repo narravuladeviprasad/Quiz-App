@@ -377,6 +377,57 @@ function shuffleArray(array) {
   return array;
 }
 
+function cleanUpInvalidScores() {
+  const scores = loadHighScores();
+  const validScores = scores.filter(s => s.userId && s.category);
+  
+  if (scores.length !== validScores.length) {
+    localStorage.setItem(HS_KEY, JSON.stringify(validScores));
+    console.log(`Cleaned up ${scores.length - validScores.length} invalid scores`);
+  }
+}
+
+// CSV Export Functionality
+function exportScoresToCSV() {
+  const scores = loadHighScores();
+  
+  if (scores.length === 0) {
+    alert('No scores to export!');
+    return;
+  }
+
+  const filename = prompt('Enter filename for export (without extension):', 
+                         `neon_quiz_scores_${new Date().toISOString().slice(0,10)}`) || 
+                         'neon_quiz_scores';
+
+  // Prepare CSV content with proper escaping
+  const headers = ['User ID', 'Name', 'Category', 'Score', 'Date'];
+  const rows = scores.map(score => [
+    `"${(score.userId || 'N/A').toString().replace(/"/g, '""')}"`,
+    `"${(score.name || 'Anonymous').toString().replace(/"/g, '""')}"`,
+    `"${(score.category || 'General').toString().replace(/"/g, '""')}"`,
+    score.score || 0,
+    `"${(score.date || new Date().toISOString()).toString().replace(/"/g, '""')}"`
+  ]);
+
+  // Convert to CSV string
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+
+  // Create download link
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `${filename}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 // Page-specific scripts
 if (document.querySelector('.login-container')) {
   // Login page scripts
@@ -504,17 +555,7 @@ if (document.querySelector('.quiz-container')) {
     }
   });
 }
-function cleanUpInvalidScores() {
-  const scores = loadHighScores();
-  const validScores = scores.filter(s => s.userId && s.category);
-  
-  if (scores.length !== validScores.length) {
-    localStorage.setItem(HS_KEY, JSON.stringify(validScores));
-    console.log(`Cleaned up ${scores.length - validScores.length} invalid scores`);
-  }
-}
 
-// Call this when admin page loads
 if (document.querySelector('.admin-container')) {
   cleanUpInvalidScores();
 
@@ -546,13 +587,14 @@ if (document.querySelector('.admin-container')) {
   }
   updateCategoryList();
 
-  // Create user scores section
+  // Create user scores section with export button
   const userScoresSection = document.createElement('section');
   userScoresSection.className = 'user-scores';
   userScoresSection.innerHTML = `
     <h3>User Scores</h3>
     <div class="search-box">
       <input type="text" id="scoreSearch" placeholder="Search by ID or name...">
+      <button id="exportScoresBtn" class="btn primary">Export to CSV</button>
     </div>
     <table>
       <thead>
@@ -571,63 +613,64 @@ if (document.querySelector('.admin-container')) {
   // Add the section to the admin panel
   document.querySelector('.admin-panel').appendChild(userScoresSection);
 
+  // Add event listener for export button
+  document.getElementById('exportScoresBtn').addEventListener('click', exportScoresToCSV);
+
   // Function to update user scores table
   function updateUserScoresTable() {
-  const scores = loadHighScores();
-  const tableBody = document.getElementById('scoresTableBody');
-  tableBody.innerHTML = '';
+    const scores = loadHighScores();
+    const tableBody = document.getElementById('scoresTableBody');
+    tableBody.innerHTML = '';
 
-  scores.forEach(score => {
-    // Ensure we have required fields, skip invalid entries
-    if (!score.userId || !score.category) {
-      console.warn('Skipping invalid score entry:', score);
-      return;
-    }
-
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${score.userId || 'N/A'}</td>
-      <td>${score.name || 'Anonymous'}</td>
-      <td>${score.category || 'General'}</td>
-      <td>${score.score || 0}</td>
-      <td><button class="btn ghost remove-score-btn" 
-           data-userid="${score.userId}" 
-           data-category="${score.category}">Remove</button></td>
-    `;
-    tableBody.appendChild(row);
-  });
-
-  // Add event listeners to remove buttons
-  document.querySelectorAll('.remove-score-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const userId = this.getAttribute('data-userid');
-      const category = this.getAttribute('data-category');
-
-      // Additional validation
-      if (!userId || !category) {
-        alert('Cannot remove this score - missing user or category data');
+    scores.forEach(score => {
+      if (!score.userId || !score.category) {
+        console.warn('Skipping invalid score entry:', score);
         return;
       }
 
-      if (confirm(`Remove ${userId}'s score for ${category}?`)) {
-        // Remove from high scores
-        const scores = loadHighScores();
-        const updatedScores = scores.filter(s => 
-          !(s.userId === userId && s.category === category)
-        );
-        localStorage.setItem(HS_KEY, JSON.stringify(updatedScores));
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${score.userId || 'N/A'}</td>
+        <td>${score.name || 'Anonymous'}</td>
+        <td>${score.category || 'General'}</td>
+        <td>${score.score || 0}</td>
+        <td><button class="btn ghost remove-score-btn" 
+             data-userid="${score.userId}" 
+             data-category="${score.category}">Remove</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
 
-        // Remove from completed categories (only if userId exists)
-        if (userId && userId !== 'undefined') {
-          removeCompletedCategory(userId, category);
+    // Add event listeners to remove buttons
+    document.querySelectorAll('.remove-score-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-userid');
+        const category = this.getAttribute('data-category');
+
+        if (!userId || !category) {
+          alert('Cannot remove this score - missing user or category data');
+          return;
         }
 
-        // Refresh the table
-        updateUserScoresTable();
-      }
+        if (confirm(`Remove ${userId}'s score for ${category}?`)) {
+          // Remove from high scores
+          const scores = loadHighScores();
+          const updatedScores = scores.filter(s => 
+            !(s.userId === userId && s.category === category)
+          );
+          localStorage.setItem(HS_KEY, JSON.stringify(updatedScores));
+
+          // Remove from completed categories
+          if (userId && userId !== 'undefined') {
+            removeCompletedCategory(userId, category);
+          }
+
+          // Refresh the table
+          updateUserScoresTable();
+        }
+      });
     });
-  });
-}
+  }
 
   // Initialize the scores table when page loads
   updateUserScoresTable();
@@ -640,9 +683,6 @@ if (document.querySelector('.admin-container')) {
       row.style.display = text.includes(term) ? '' : 'none';
     });
   });
-
-  // ... rest of your admin page code ...
-
 
   // Category management
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
