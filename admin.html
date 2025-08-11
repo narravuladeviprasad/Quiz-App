@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Quiz - Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="admin-container">
+    <header>
+      <div class="brand">
+        <div class="logo">Q</div>
+        <div>
+          <h1>Neon Quiz Admin</h1>
+          <p class="admin-info">Logged in as: <span id="adminNameDisplay"></span></p>
+        </div>
+      </div>
+      
+      <div class="admin-controls">
+        <button id="logoutBtn" class="btn ghost">Logout</button>
+        <button id="userViewBtn" class="btn primary">User View</button>
+      </div>
+    </header>
+    
+    <main>
+      <div class="admin-panel">
+        <section class="category-management">
+          <h3>Category Management</h3>
+          <div class="form-group">
+            <input type="text" id="newCategoryName" placeholder="New Category Name">
+            <button id="addCategoryBtn" class="btn">Add Category</button>
+          </div>
+          <div class="form-group">
+            <select id="categoryList"></select>
+            <button id="deleteCategoryBtn" class="btn ghost">Delete Category</button>
+          </div>
+        </section>
+        
+        <section class="question-management">
+          <h3>Question Management</h3>
+          <div class="form-group">
+            <input type="text" id="questionText" placeholder="Question">
+          </div>
+          <div class="form-group options-grid">
+            <input type="text" id="option1" placeholder="Option 1">
+            <input type="text" id="option2" placeholder="Option 2">
+            <input type="text" id="option3" placeholder="Option 3">
+            <input type="text" id="option4" placeholder="Option 4">
+          </div>
+          <div class="form-group">
+            <input type="number" id="correctIndex" placeholder="Correct Index (0-3)" min="0" max="3">
+            <input type="number" id="questionPoints" placeholder="Points" value="10">
+            <input type="text" id="questionHint" placeholder="Hint">
+          </div>
+          <div class="form-group buttons">
+            <button id="addQuestionBtn" class="btn">Add Question</button>
+            <button id="editQuestionBtn" class="btn ghost">Save Changes</button>
+          </div>
+        </section>
+        
+        <section class="existing-questions">
+          <h3>Existing Questions</h3>
+          <select id="questionList" size="5"></select>
+          <div class="form-group buttons">
+            <button id="loadQuestionBtn" class="btn">Load Question</button>
+            <button id="deleteQuestionBtn" class="btn ghost">Delete Question</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

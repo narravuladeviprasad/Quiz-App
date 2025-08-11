@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Quiz - Player</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="quiz-container">
+    <header>
+      <div class="brand">
+        <div class="logo">Q</div>
+        <div>
+          <h1>Neon Quiz</h1>
+          <p class="player-info">Playing as: <span id="playerName"></span> • Press 1–4 to answer</p>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <div class="category-select">
+          <span>Category:</span>
+          <select id="categorySelect"></select>
+        </div>
+        <button id="logoutBtn" class="btn ghost">Logout</button>
+        <button id="startBtn" class="btn primary">Start Quiz ▼</button>
+      </div>
+    </header>
+    
+    <main>
+      <div class="quiz-card" id="quizCard">
+        <div class="quiz-header">
+          <div class="progress">
+            <span id="questionNum">Q 1/10</span>
+            <span class="score">Score: <span id="score">0</span></span>
+          </div>
+          <div class="timer">
+            <div class="timer-circle">
+              <svg viewBox="0 0 36 36">
+                <path id="timerBg" d="M18 2a16 16 0 1 0 0 32a16 16 0 1 0 0-32" 
+                      fill="none" stroke="#eee" stroke-width="3"></path>
+                <path id="timerArc" d="M18 2a16 16 0 1 0 0 32a16 16 0 1 0 0-32" 
+                      fill="none" stroke="url(#gradient)" stroke-width="3" stroke-linecap="round"></path>
+                <defs>
+                  <linearGradient id="gradient">
+                    <stop offset="0%" stop-color="#00ffff"/>
+                    <stop offset="100%" stop-color="#ff00ff"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span id="timeLeft">15s</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question" id="question">Loading question...</div>
+        
+        <div class="options" id="options">
+          <!-- Options will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="hint" id="hint"></div>
+        
+        <div class="quiz-controls">
+          <button id="nextBtn" class="btn">Next ⏭</button>
+          <button id="pauseBtn" class="btn ghost">Pause ⏸</button>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>Built for learning — responsive & accessible</p>
+      <p>Keyboard friendly • Local high-scores</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

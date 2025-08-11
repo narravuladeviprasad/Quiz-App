@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Quiz - Login</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">Q</div>
+    <h1>Neon Quiz</h1>
+    <p class="subtitle">Select your role to continue</p>
+    
+    <div class="tabs">
+      <button class="tab active" id="userTab">User</button>
+      <button class="tab" id="adminTab">Admin</button>
+    </div>
+    
+    <div class="login-form" id="userForm">
+      <input type="text" id="username" placeholder="Your Name" required>
+      <input type="text" id="userid" placeholder="10-digit User ID" pattern="\d{10}" title="Please enter a 10-digit number" required>
+      <div id="userMessage" class="message"></div>
+      <button class="btn" id="userLoginBtn">Start Quiz</button>
+    </div>
+    
+    <div class="login-form" id="adminForm" style="display: none;">
+      <input type="text" id="adminName" placeholder="Admin Username" required>
+      <input type="password" id="adminPass" placeholder="Password" required>
+      <div id="adminMessage" class="message"></div>
+      <button class="btn" id="adminLoginBtn">Login</button>
+    </div>
+    
+    <div class="footer">
+      Built for learning • Keyboard friendly • Local high-scores
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
